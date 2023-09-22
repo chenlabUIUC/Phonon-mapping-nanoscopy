@@ -1,17 +1,21 @@
 # Maxwell Lattice Project
 
-This code is developed for tracking tetrahedron position and lattice parameters in SEM images. One example SEM image and cropped areas with the tetrahedra contour is provided.  
-Data: 08/2022.   
-This code is tested using Jupyter notebook.  
+This code is developed for performing mode analysis and spring constant fitting on calculated energy curves. One example particle trajectory is provided for the mode analysis, and 3 energy curves are provided for nearest neighbor (NN) spring and angular (ANG) spring fitting.
+Data: 09/2023.
+This code is tested using Matlab 2021a.  
 For more information about the project, algorithms, and related publications please refer to the [Chen Group website](https://chenlab.matse.illinois.edu/).  
+
+## Reference
+
+If you find our codes are helpful to your publication, please cite:
+
+Chang Qian, Ethan Stanifer, Zhan Ma, Binbin Luo, Chang Liu, Lehan Yao, Wenxiao Pan,  Xiaoming Mao, Qian Chen, "Nanoscale Imaging of Phonon Modes and Reconfiguration in Topologically-Engineered Nanoparticle Lattices" _Nature_
 
 ## Getting started
 ---------------------
-1. Download the script (tetrahedr_tracking.ipynb) and the example data (SEM.tif as tracking image, Cropped_SEM.tif as the targeted particle, Tetrahedra_Contour.csv as the targeted particle contour).
-2. Run the script in the jupyter notebook and modify the parameters following the comments.
-3. Enjoy the tracking results!
-
-## Notes
-----------------------
-1. Don't forget to change the corresponding parameters to have the image properly tracked.
-2. To display the tracking results, manually selection of the gaussian mixture clusters is needed.
+Codes can be used upon downloading:
+- Mode analysis/ModeAnalysis_20230907.m: main code for mode analysis and plotting
+- Spring constants from energy curves/Fit_NNSpring: NN spring fitting
+- Spring constants from energy curves/Fit_ANGSpring: ANG spring fitting
+  
+Example data are included as '.mat' files.
