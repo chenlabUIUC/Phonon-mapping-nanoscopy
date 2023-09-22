@@ -17,7 +17,7 @@ Chang Qian, Ethan Stanifer, Zhan Ma, Binbin Luo, Chang Liu, Lehan Yao, Wenxiao P
 ## Getting started
 ---------------------
 Codes can be used upon downloading:
-- Mode analysis/ModeAnalysis_20230907.m: main code for mode analysis and plotting
+- Mode analysis/ModeAnalysis.m: main code for mode analysis and plotting
 - Spring constants from energy curves/Fit_NNSpring: NN spring fitting
 - Spring constants from energy curves/Fit_ANGSpring: ANG spring fitting
   
