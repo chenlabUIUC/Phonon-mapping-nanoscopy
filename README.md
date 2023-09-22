@@ -9,13 +9,11 @@ This code is tested using Matlab 2021a.
 For more information about the project, algorithms, and related publications please refer to the [Chen Group website](https://chenlab.matse.illinois.edu/).  
 
 ## Reference
-
 If you find our codes are helpful to your publication, please cite:
 
 Chang Qian, Ethan Stanifer, Zhan Ma, Binbin Luo, Chang Liu, Lehan Yao, Wenxiao Pan,  Xiaoming Mao, Qian Chen, "Nanoscale Imaging of Phonon Modes and Reconfiguration in Topologically-Engineered Nanoparticle Lattices" _Nature_
 
 ## Getting started
----------------------
 Codes can be used upon downloading:
 - Mode analysis/ModeAnalysis.m: main code for mode analysis and plotting
 - Spring constants from energy curves/Fit_NNSpring: NN spring fitting
