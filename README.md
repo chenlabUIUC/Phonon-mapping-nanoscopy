@@ -1,8 +1,11 @@
 # Maxwell Lattice Project
 
 This code is developed for performing mode analysis and spring constant fitting on calculated energy curves. One example particle trajectory is provided for the mode analysis, and 3 energy curves are provided for nearest neighbor (NN) spring and angular (ANG) spring fitting.
+
 Data: 09/2023.
+
 This code is tested using Matlab 2021a.  
+
 For more information about the project, algorithms, and related publications please refer to the [Chen Group website](https://chenlab.matse.illinois.edu/).  
 
 ## Reference
