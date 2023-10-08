@@ -11,7 +11,7 @@ For more information about the project, algorithms, and related publications ple
 ## Reference
 If you find our codes are helpful to your publication, please cite:
 
-Chang Qian, Ethan Stanifer, Zhan Ma, Binbin Luo, Chang Liu, Lehan Yao, Wenxiao Pan,  Xiaoming Mao, Qian Chen, "Nanoscale Imaging of Phonon Modes and Reconfiguration in Topologically-Engineered Nanoparticle Lattices" _Nature_
+Chang Qian, Ethan Stanifer, Zhan Ma, Binbin Luo, Chang Liu, Lehan Yao, Wenxiao Pan,  Xiaoming Mao, Qian Chen, "Nanoscale Imaging of Phonon Modes and Reconfiguration in Topologically-Engineered Nanoparticle Lattices" submitted to _Nature_
 
 ## Getting started
 Codes can be used upon downloading:
