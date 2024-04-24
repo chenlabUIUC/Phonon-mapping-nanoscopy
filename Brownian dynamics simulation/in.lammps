@@ -1,0 +1,30 @@
+dimension       2
+units           lj
+atom_style      body rounded/polygon 1 6
+atom_modify map array
+read_data       ../I02_config/64squares.txt
+group top id 17
+
+# pari style body/rounded/polygon/fvdw/fsh/nn is modified from body/rounded/polygon, please read the docment for body/rounded/polygon online
+# pair_style body/rounded/polygon c_n c_t mu delta_ua cutoff
+# I added more argments: body/rounded/polygon/fvdw/fsh/nn c_n c_t mu delta_ua cutoff cut_global file_param_fvdw file_param_fsh multiple_of_fvdw multiple_of_fsh
+pair_style body/rounded/polygon/fvdw/fsh/nn 0 0 1.0 1.0 1.0 8 ../Txt_param_Fvdw_Fsh_NN_220227/para_fvdw_ ../Txt_param_Fsh_NN_I022/para_fsh_ 64 78
+
+# pair_coeff atom_typei atom_typej k_n k_na atom_tgt_for_outputForce file_output_head DT dump_everyDT_steps dump_start_time
+pair_coeff * * 100.0 0.0 1 file_dump_fvdw. 1000 0
+
+comm_modify vel yes
+neighbor     8.0 nsq
+fix          2 all enforce2d
+compute tempCOM all temp/com
+compute temp_body all temp/body bias tempCOM
+thermo_style custom step c_temp_body c_tempCOM temp ke pe etotal press
+thermo          1000
+timestep       0.005
+compute      1 all body/local id 1 2 3
+dump 1 all local 1 ./dump_x.* index c_1[1] c_1[2] c_1[3] c_1[4]
+
+# fix integ_bd all bd/body/nve target_temperature damp seed target_atom_id file_for_output dump_everyDT_steps dump_start_time
+fix integ_bd all bd/body/nve 1.0 0.01 1 1 file_dump_nveBD. 1000 0
+
+run             2000000
