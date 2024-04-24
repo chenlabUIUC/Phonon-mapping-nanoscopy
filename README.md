@@ -22,4 +22,4 @@ The mode analysis and spring constant parts of the codes can be used upon downlo
 - Spring constants from energy curves/Fit_NNSpring: NN spring fitting
 - Spring constants from energy curves/Fit_ANGSpring: ANG spring fitting
   
-For usage BD simulation part, please refer to [readme](Brownian dynamics simulation/Readme.md).
+For usage BD simulation part, please refer to [readme](https://github.com/chenlabUIUC/MaxwellLattice/blob/main/Brownian%20dynamics%20simulation/Readme.md)).
