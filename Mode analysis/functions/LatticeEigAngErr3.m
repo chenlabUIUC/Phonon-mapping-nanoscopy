@@ -1,6 +1,6 @@
 function [S,Err,Errext]=LatticeEigAngErr3(K,Wp,Wm,Wpperr,Wmmerr,Wpmerr,Echeck,x,ang,l0,frac,Weight)
-Diff=frac.*x;
 
+Diff=frac.*x;
 S0=LatticeFitAng3(K,Wp,Wm,Wpperr,Wmmerr,Wpmerr,Echeck,x,ang,l0,0);
 
 d00=sqrt(LatticeFitAng3(K,Wp,Wm,Wpperr,Wmmerr,Wpmerr,Echeck,x,ang,l0,Weight));
@@ -39,10 +39,14 @@ for i=1:length(K)
         %D1=real(((sqrt(lp(K(i,1),K(i,2)))-Wp(i))/real(Wpperr(i)))^2+((sqrt(lm(K(i,1),K(i,2)))-Wm(i))/real(Wmmerr(i)))^2);
         %D2=real(((sqrt(lm(K(i,1),K(i,2)))-Wp(i))/real(Wpperr(i)))^2+((sqrt(lp(K(i,1),K(i,2)))-Wm(i))/real(Wmmerr(i)))^2);
         if Weight==1
-            dm1dwp=(d00*2*Tot*(Sxx*Syy-Sxy^2)*(Wpperr(i)*Wmmerr(i)-Wpmerr(i).^2)).^-1*(Wpperr(i)*(Syy*dfp1(K(i,1),K(i,2))-Sxy*dfp2(K(i,1),K(i,2)))+Wpmerr(i)*(Syy*dfm1(K(i,1),K(i,2))-Sxy*dfm2(K(i,1),K(i,2))));
-            dm1dwm=(d00*2*Tot*(Sxx*Syy-Sxy^2)*(Wpperr(i)*Wmmerr(i)-Wpmerr(i).^2)).^-1*(Wpmerr(i)*(Syy*dfp1(K(i,1),K(i,2))-Sxy*dfp2(K(i,1),K(i,2)))+Wmmerr(i)*(Syy*dfm1(K(i,1),K(i,2))-Sxy*dfm2(K(i,1),K(i,2))));
-            dm2dwp=(d00*2*Tot*(Sxx*Syy-Sxy^2)*(Wpperr(i)*Wmmerr(i)-Wpmerr(i).^2)).^-1*(Wpperr(i)*(Sxx*dfp2(K(i,1),K(i,2))-Sxy*dfp1(K(i,1),K(i,2)))+Wpmerr(i)*(Sxx*dfm2(K(i,1),K(i,2))-Sxy*dfm1(K(i,1),K(i,2))));
-            dm2dwm=(d00*2*Tot*(Sxx*Syy-Sxy^2)*(Wpperr(i)*Wmmerr(i)-Wpmerr(i).^2)).^-1*(Wpmerr(i)*(Sxx*dfp2(K(i,1),K(i,2))-Sxy*dfp1(K(i,1),K(i,2)))+Wmmerr(i)*(Sxx*dfm2(K(i,1),K(i,2))-Sxy*dfm1(K(i,1),K(i,2))));
+            dm1dwp=(d00*2*Tot*(Sxx*Syy-Sxy^2)*(Wpperr(i)*Wmmerr(i)-Wpmerr(i).^2)).^-1*...
+                (Wpperr(i)*(Syy*dfp1(K(i,1),K(i,2))-Sxy*dfp2(K(i,1),K(i,2)))+Wpmerr(i)*(Syy*dfm1(K(i,1),K(i,2))-Sxy*dfm2(K(i,1),K(i,2))));
+            dm1dwm=(d00*2*Tot*(Sxx*Syy-Sxy^2)*(Wpperr(i)*Wmmerr(i)-Wpmerr(i).^2)).^-1*...
+                (Wpmerr(i)*(Syy*dfp1(K(i,1),K(i,2))-Sxy*dfp2(K(i,1),K(i,2)))+Wmmerr(i)*(Syy*dfm1(K(i,1),K(i,2))-Sxy*dfm2(K(i,1),K(i,2))));
+            dm2dwp=(d00*2*Tot*(Sxx*Syy-Sxy^2)*(Wpperr(i)*Wmmerr(i)-Wpmerr(i).^2)).^-1*...
+                (Wpperr(i)*(Sxx*dfp2(K(i,1),K(i,2))-Sxy*dfp1(K(i,1),K(i,2)))+Wpmerr(i)*(Sxx*dfm2(K(i,1),K(i,2))-Sxy*dfm1(K(i,1),K(i,2))));
+            dm2dwm=(d00*2*Tot*(Sxx*Syy-Sxy^2)*(Wpperr(i)*Wmmerr(i)-Wpmerr(i).^2)).^-1*...
+                (Wpmerr(i)*(Sxx*dfp2(K(i,1),K(i,2))-Sxy*dfp1(K(i,1),K(i,2)))+Wmmerr(i)*(Sxx*dfm2(K(i,1),K(i,2))-Sxy*dfm1(K(i,1),K(i,2))));
             %recall that plus and minus switch in the data vs calculated
             %since there is an inverse.
             Err(1)=Err(1)+dm1dwp.*Wmmerr(i).*dm1dwp+2.*dm1dwp.*Wpmerr(i).*dm1dwm+dm1dwm*Wpperr(i)*dm1dwm;

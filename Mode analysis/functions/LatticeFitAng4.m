@@ -1,5 +1,13 @@
-function d=LatticeFitAng3(K,Wp,Wm,Wpperr,Wmmerr,Wpmerr,Echeck,x,a,l0,Weight)
+function d=LatticeFitAng4(K,Wp,Wm,Wpperr,Wmmerr,Wpmerr,Echeck,x,a,l0,Weight,only_lower)
 [lp,lm]=LatticeEigAng(x,a,l0);
+%
+if only_lower==1
+    Wm = zeros(size(Wm));
+    for i = 1:size(K,1)
+        Wm(i) = sqrt(lp(K(i,1),K(i,2)));
+    end
+end
+
 %fitting
 d=0.0;
 Tot=sum(1-Echeck);

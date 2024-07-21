@@ -1,4 +1,4 @@
-function [d,dm,dp,de]=LatticeFitAng3check(K,Wp,Wm,Wpperr,Wmmerr,Wpmerr,Echeck,x,a,l0,Weight)
+function [d]=LatticeFitAng3check(K,Wp,Wm,Wpperr,Wmmerr,Wpmerr,Echeck,x,a,l0,Weight)
 [lp,lm]=LatticeEigAng(x,a,l0);
 %fitting
 d=0.0;
@@ -19,18 +19,23 @@ for i=1:length(K)
             +2*(sqrt(lm(K(i,1),K(i,2)))-Wp(i))*Wpmerr(i)*(sqrt(lp(K(i,1),K(i,2)))-Wm(i))...
             +(sqrt(lp(K(i,1),K(i,2)))-Wm(i))*Wmmerr(i)*(sqrt(lp(K(i,1),K(i,2)))-Wm(i));
         end
+
+        if Weight==1
+            d = d+D/Tot/2;
+        else
         d=d+(Dm+Dp)/Tot/2;
-        dm=dm+Dm/Tot/2;
-        dp=dp+Dp/Tot/2;
-        de=de+De/(Tot*2)^2;
-        if Dm+Dp<0
-            disp(x)
-            disp([lm(K(i,1),K(i,2)),lp(K(i,1),K(i,2)),D/Tot/2])
         end
+        % dm=dm+Dm/Tot/2;
+        % dp=dp+Dp/Tot/2;
+        % de=de+De/(Tot*2)^2;
+        % if Dm+Dp<0
+        %     disp(x)
+        %     disp([lm(K(i,1),K(i,2)),lp(K(i,1),K(i,2)),D/Tot/2])
+        % end
     end
 end
 d=sqrt(d);
-dm=sqrt(dm);
-dp=sqrt(dp);
-de=sqrt(de)/d;
+% dm=sqrt(dm);
+% dp=sqrt(dp);
+% de=sqrt(de)/d;
 
