@@ -1,6 +1,7 @@
 %% PMN on rhombic lattice
 
 clear; close all; clc;
+addpath('functions/');
 
 %%
 Input_path = 'Data drift rotation corrected/';
