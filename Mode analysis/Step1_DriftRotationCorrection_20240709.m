@@ -6,6 +6,7 @@
 % Rotation so that lattice vector 2 is along x-axis.
 
 clear; close all; clc;
+addpath('functions/');
 
 %%
 Input_path = 'Data raw/';
