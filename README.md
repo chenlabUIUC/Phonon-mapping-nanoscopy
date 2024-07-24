@@ -18,8 +18,12 @@ Chang Qian, Ethan Stanifer, Zhan Ma, Binbin Luo, Lehan Yao, Chang Liu, Wenxiao P
 ## Getting started
 
 The mode analysis and spring constant parts of the codes can be used upon downloading. All five examples of particle trajectory are provided for the mode analysis, and 3 energy curves are provided for nearest neighbor (NN) spring and angular (ANG) spring fitting. The example data are included as '.mat' files.
-- Mode analysis/Step2_1_PMN_rhombic_20240709.m: main code for mode analysis and plotting
-- Spring constants from energy curves/Fit_NNSpring: NN spring fitting
-- Spring constants from energy curves/Fit_ANGSpring: ANG spring fitting
-  
-For the BD simulation part, please refer to [readme](https://github.com/chenlabUIUC/MaxwellLattice/blob/main/Brownian%20dynamics%20simulation/Readme.md).
+- Mode analysis：
+  - Mode analysis/Step1_DriftRotationCorrection_20240709.m: Drift and rotation correction for all data matrices
+  - Mode analysis/Step2_1_PMN_rhombic_20240709.m: main code for mode analysis and plotting for rhombic lattice of nanocubes
+  - Mode analysis/Step2_2_PMN_hexagonal_20240709.m: mode analysis and plotting for hexagonal lattice of nanorods and nanoprisms
+- Spring constants fitting:
+  - Spring constants from energy curves/Fit_NNSpring: NN spring fitting
+  - Spring constants from energy curves/Fit_ANGSpring: ANG spring fitting
+- BD simulation:
+  - Please refer to [readme](https://github.com/chenlabUIUC/MaxwellLattice/blob/main/Brownian%20dynamics%20simulation/Readme.md).
