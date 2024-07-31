@@ -10,10 +10,6 @@ The BD simulation part is developed and tested using LAMMPS (29sep2021) and Matl
 
 For more information about the project, algorithms, and related publications please refer to the [Chen Group website](https://chenlab.matse.illinois.edu/).  
 
-## Reference
-If you find our codes are helpful to your publication, please cite:
-
-Chang Qian, Ethan Stanifer, Zhan Ma, Binbin Luo, Lehan Yao, Chang Liu, Wenxiao Pan,  Xiaoming Mao, Qian Chen, "Nanoscale Imaging of Phonon Modes and Reconfiguration in Topologically-Engineered Nanoparticle Lattices" submitted to _Science_
 
 ## Getting started
 
