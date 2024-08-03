@@ -3,7 +3,7 @@ function standardModePlot(K, W, cmp, xy_range, c_range, pointSize, title_text)
     view(2)
     daspect([1 1 1]); box on; axis equal; hold on;
     colormap(gca, cmp)
-    clim([0, c_range])
+    caxis([0, c_range])
     axis([-1,1,-1,1] .* xy_range);
     title(title_text)
 end
