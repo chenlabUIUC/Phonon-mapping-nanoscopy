@@ -2,7 +2,7 @@
 
 This code package is developed for the calculation of phonon dispersion relations of nanoparticle superlattices associated with the manuscript titled, "Nanoscale Phonon Dynamics in Topologically-Engineered, Self-Assembled Nanoparticle Lattices" by C. Qian et al. 
 
-Getting started:
+## Getting started:
 
 Download the "functions", "Data drift rotation corrected", and "Data raw" folders, and the following three codes. Run the codes directly in Matlab 2021a.
 
@@ -11,3 +11,7 @@ Download the "functions", "Data drift rotation corrected", and "Data raw" folder
   - Step2_2_PMN_hexagonal_20240709.m: main code for mode analysis, plotting, and fitting of NN spring constant for hexagonal lattice. Input: the output from "Step1_DriftRotationCorrection_20240709.m". Sample inputs included in the folder of "Data drift rotation corrected" on rods and prisms. Output: Plots of phonon dispersion relations with errors in the frequency denoted; fitted NN springs with errors.
 
 Notes: For the Step1 and Step2 codes, inputs are set as the sample data provided in "Data raw" and "Data drift rotation corrected" folders. Comments are given in the codes on how to input your own experimental data following the sample input data formats. The inputs of tracking errors for Step2_1_PMN_rhombic_20240709.m and Step2_2_PMN_hexagonal_20240709.m, can be estimated using the workflow detailed in the Supplementary Information of the manuscript. 
+
+## Runtime estimation:
+Operating condition: Windows, 64-bit; 64 GB RAM; CPU Intel i9-13900HX, Matlab R2023b.
+For the largest dataset, 'Rod.mat', the drift and rotation correction takes ~0.5 hr and mode analysis takes ~1.5 hr.
