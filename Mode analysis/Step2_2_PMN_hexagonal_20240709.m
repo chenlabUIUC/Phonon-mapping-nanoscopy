@@ -53,7 +53,7 @@ for activate_set = activate_sets
 
     SegN = floor((n1+n2)/2);
     SegNT = 50;
-    N_T2D = 100; % Require 12 GB RAM
+    N_T2D = 200; % Require ~12 GB RAM
     [n1, n2] = deal(n2, n1);
     Q21 = pos;
 
