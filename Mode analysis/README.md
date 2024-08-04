@@ -14,4 +14,4 @@ Notes: For the Step1 and Step2 codes, inputs are set as the sample data provided
 
 ## Runtime estimation:
 Operating condition: Windows, 64-bit; 64 GB RAM; CPU Intel i9-13900HX, Matlab R2023b.
-For the largest dataset, 'Rod.mat', the drift and rotation correction takes ~0.5 hr and mode analysis takes ~1.5 hr.
+- For the largest dataset, 'Rod.mat', the drift and rotation correction takes ~0.5 hr and mode analysis takes ~1.5 hr.
