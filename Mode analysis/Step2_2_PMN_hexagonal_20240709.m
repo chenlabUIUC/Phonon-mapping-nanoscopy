@@ -1,16 +1,27 @@
-%% PMN on rhombic lattice
+%% PMN on hexagonal lattice
+% PURPOSE:  Main code for mode analysis, plotting, and fitting of nearest
+%           neighboring (NN) spring constant for hexagonal lattice.
+%
+% INPUT:    Drift corrected position matrix of hexagonal lattice, with
+%           shape of [N,2,t], N as number of nanoparticles, and t as number
+%           of frames in 'Input_path'
+%
+% OUTPUT:   Figures and output data matrix in 'Plot_dir'
+%           
+% HISTORY:  Written by Chang Qian
+% Last modified by Chang Qian on 07/09/2024
 
 clear; close all; clc;
-addpath('functions/');
+addpath('functions/')
 
 %%
 Input_path = 'Data drift rotation corrected/';
 Plot_dir = 'Plots/';
 
-activate_sets = [1];
+activate_sets = [1:2];
 % Input matrix name, tracking error (nm)
-Input_params{1} = {'Rod.mat', 1};
-Input_params{2} = {'Prism.mat', 5.7};
+Input_params{1} = {'Rod.mat', 1};       % Expected runtime 1~3 hr
+Input_params{2} = {'Prism.mat', 5.7};   % Expected runtime ~1 min
 
 % Plotting parameters:
 %   K space repetition
@@ -41,6 +52,8 @@ for activate_set = activate_sets
     plot_pointSize = Plotting_params{activate_set}{4};
 
     SegN = floor((n1+n2)/2);
+    SegNT = 50;
+    N_T2D = 100; % Require 12 GB RAM
     [n1, n2] = deal(n2, n1);
     Q21 = pos;
 
@@ -187,16 +200,22 @@ for activate_set = activate_sets
         [Lpt,Lmt]=LatticePol_hexa(kfit,l0);
         
         % Modes, 2 bands.
-        Lp=sqrt(lp(K(:,1),K(:,2))); % lower
-        Lm=sqrt(lm(K(:,1),K(:,2))); % upper
-        Lp(Echeck==1)=0.0;
-        Lm(Echeck==1)=0.0;
+        [KTx,KTy] = meshgrid(linspace(-1,1,N_T2D).*plot_klim, ...
+                             linspace(-1,1,N_T2D).*plot_klim);
+        KT = cat(2, reshape(KTx,[],1), reshape(KTy,[],1));
+        Lp = sqrt(lp(KT(:,1),KT(:,2))); % lower
+        Lm = sqrt(lm(KT(:,1),KT(:,2))); % upper
+        Lp(Echeck==1) = 0.0;
+        Lm(Echeck==1) = 0.0;
         
         % Polarization, 2 bands
-        Lptlist=diag(Lmt(K(:,1),K(:,2)));
-        Lmtlist=diag(Lpt(K(:,1),K(:,2)));
+        Lptlist=diag(Lmt(KT(:,1),KT(:,2)));
+        Lmtlist=diag(Lpt(KT(:,1),KT(:,2)));
         Lptlist(Echeck==1)=0.0;
         Lmtlist(Echeck==1)=1.0;
+        inBoxT = inpolygon(KT(:,1), KT(:,2), Box_hexa(:,1), Box_hexa(:,2));
+        Lptlist(~inBoxT) = 0.5;
+        Lmtlist(~inBoxT) = 0.5;
         
         %% 1D path interpolation and comparison
         unpackStruct(Path_hexa);
@@ -213,8 +232,9 @@ for activate_set = activate_sets
         end
         
         % ANG model
-        SegDistT = mean(SegDist_rec,2);
-        SegKT = SegK_rec(:,:,1);
+        PathT_hexa = pathHexa(b1, b2, SegNT);
+        SegDistT = mean(PathT_hexa.SegDist_rec,2);
+        SegKT = PathT_hexa.SegK_rec(:,:,1);
         
         SegEigANG_lower = zeros(size(SegDistT));
         SegEigANG_upper = zeros(size(SegDistT));
@@ -230,28 +250,67 @@ for activate_set = activate_sets
         nexttile(1)
             standardModePlot(K, Wp, PLM, plot_klim, plot_clim, plot_pointSize, 'Experiment frequency, lower')
             plot(Box_hexa(:,1),Box_hexa(:,2),'k-')
+            plot3(Box_hexa(:,1),Box_hexa(:,2),ones(size(Box_hexa(:,1))).*plot_clim, 'k-', 'LineWidth',1)
         nexttile(2)
             standardModePlot(K, Wm, PLM, plot_klim, plot_clim, plot_pointSize, 'Experiment frequency, upper')
             plot(Box_hexa(:,1),Box_hexa(:,2),'k-')
+            plot3(Box_hexa(:,1),Box_hexa(:,2),ones(size(Box_hexa(:,1))).*plot_clim, 'k-', 'LineWidth',1)
         nexttile(3)
-            standardModePlot(K, Lm, PLM, plot_klim, plot_clim, plot_pointSize, 'Model frequency, lower')
-            plot(Box_hexa(:,1),Box_hexa(:,2),'k-')
+            % standardModePlot(KT, Lp, PLM, plot_klim, plot_clim, plot_pointSize/10, 'Model frequency, lower')
+            imagesc(linspace(-1,1,N_T2D).*plot_klim, linspace(-1,1,N_T2D).*plot_klim, reshape(Lm,N_T2D,N_T2D));
+            colormap(gca, PLM);
+            title('Model frequency, lower')
+            hold on;
+            daspect([1,1,0.1]);
+            axis([-1,1,-1,1].*plot_klim)
+            set(gca,'YDir','normal')
+            caxis([0,plot_clim])
+            plot3(Box_hexa(:,1),Box_hexa(:,2),ones(size(Box_hexa(:,1))).*plot_clim, 'k-', 'LineWidth',1)
         nexttile(4)
-            standardModePlot(K, Lp, PLM, plot_klim, plot_clim, plot_pointSize, 'Model frequency, upper')
+            % standardModePlot(KT, Lm, PLM, plot_klim, plot_clim, plot_pointSize/10, 'Model frequency, upper')
+            imagesc(linspace(-1,1,N_T2D).*plot_klim, linspace(-1,1,N_T2D).*plot_klim, reshape(Lp,N_T2D,N_T2D));
+            colormap(gca, PLM);
+            title('Model frequency, upper')
+            hold on;
+            daspect([1,1,0.1]);
+            axis([-1,1,-1,1].*plot_klim)
+            set(gca,'YDir','normal')
+            caxis([0,plot_clim])
             plot(Box_hexa(:,1),Box_hexa(:,2),'k-')
+            plot3(Box_hexa(:,1),Box_hexa(:,2),ones(size(Box_hexa(:,1))).*plot_clim, 'k-', 'LineWidth',1)
             colorbar;
         nexttile(5)
             standardModePlot(K(inBox,:), Lplist(inBox), BWR, plot_klim, 1, plot_pointSize, 'Experiment polarization, lower')
             plot(Box_hexa(:,1),Box_hexa(:,2),'k-')
+            plot3(Box_hexa(:,1),Box_hexa(:,2),ones(size(Box_hexa(:,1))).*plot_clim, 'k-', 'LineWidth',1)
         nexttile(6)
             standardModePlot(K(inBox,:), Lmlist(inBox), BWR, plot_klim, 1, plot_pointSize, 'Experiment polarization, upper')
             plot(Box_hexa(:,1),Box_hexa(:,2),'k-')
+            plot3(Box_hexa(:,1),Box_hexa(:,2),ones(size(Box_hexa(:,1))).*plot_clim, 'k-', 'LineWidth',1)
         nexttile(7)
-            standardModePlot(K(inBox,:), Lptlist(inBox).*0, BWR, plot_klim, 1, plot_pointSize, 'Model polarization, lower')
+            % standardModePlot(KT(inBoxT,:), Lptlist(inBoxT), BWR, plot_klim, 1, plot_pointSize/10, 'Model polarization, lower')
+            imagesc(linspace(-1,1,N_T2D).*plot_klim, linspace(-1,1,N_T2D).*plot_klim, reshape(Lptlist,N_T2D,N_T2D));
+            colormap(gca, BWR);
+            caxis([0,1]);
+            title('Model polarization, lower')
+            hold on;
+            daspect([1,1,0.1]);
+            axis([-1,1,-1,1].*plot_klim)
+            set(gca,'YDir','normal')
             plot(Box_hexa(:,1),Box_hexa(:,2),'k-')
+            plot3(Box_hexa(:,1),Box_hexa(:,2),ones(size(Box_hexa(:,1))).*plot_clim, 'k-', 'LineWidth',1)
         nexttile(8)
-            standardModePlot(K(inBox,:), Lmtlist(inBox).*0+1, BWR, plot_klim, 1, plot_pointSize, 'Model polarization, upper')
+            % standardModePlot(KT(inBoxT,:), Lmtlist(inBoxT), BWR, plot_klim, 1, plot_pointSize/10, 'Model polarization, upper')
+            imagesc(linspace(-1,1,N_T2D).*plot_klim, linspace(-1,1,N_T2D).*plot_klim, reshape(Lmtlist,N_T2D,N_T2D));
+            colormap(gca, BWR);
+            caxis([0,1]);
+            title('Model polarization, upper')
+            hold on;
+            daspect([1,1,0.1]);
+            axis([-1,1,-1,1].*plot_klim)
+            set(gca,'YDir','normal')
             plot(Box_hexa(:,1),Box_hexa(:,2),'k-')
+            plot3(Box_hexa(:,1),Box_hexa(:,2),ones(size(Box_hexa(:,1))).*plot_clim, 'k-', 'LineWidth',1)
             colorbar;
         nexttile(9)
             cla;
@@ -259,16 +318,29 @@ for activate_set = activate_sets
             message = sprintf(['kFit: ',num2str(kfit), ' ± ', num2str(kfitErr)]);
             text(0,0,message)
         nexttile(10,[1,2])
-            hold on; box on
-            %%%%%%%%%%%%%
+            % hold on; box on;
+            % errorbar(SegDistT,W_interp(:,1),W_interp(:,2),'vertical','o')
+            % errorbar(SegDistT,W_interp(:,3),W_interp(:,4),'vertical','o')
+            % plot(SegDistT,SegEigANG_lower,'-','LineWidth',2,'DisplayName','ANG model, lower')
+            % plot(SegDistT,SegEigANG_upper,'-','LineWidth',2,'DisplayName','ANG model, upper')
+            % ylabel('Frequency');
+            % currentaxis = axis();currentaxis(3)=0;
+            % axis(currentaxis);
+            % xticks(SegPtDist); xticklabels(SegPtName); xlim([0,max(SegPtDist)]);
+            % for i = 1:size(SegPtDist,1); xline(SegPtDist(i)); end
+            % legend
+            % legend({'Expt. mode lower','Expt. mode upper','ANG model lower','ANG model upper'},...
+            %     'Location','southeast');
+
+            hold on; box on;
             %  Frequency with errorbar
-            xx = [SegDistT; flip(SegDistT)];
+            xx = [mean(SegDist_rec,2); flip(mean(SegDist_rec,2))];
             
-            errorbar(SegDistT,W_interp(:,1),W_interp(:,2),'vertical','ko')
+            errorbar(mean(SegDist_rec,2),W_interp(:,1),W_interp(:,2),'vertical','ko')
             
             yy = [W_interp(:,3)+W_interp(:,4) ; flip(W_interp(:,3)-W_interp(:,4)) ];
             fill(xx,yy,[1,1,1].*.6,'FaceAlpha',0.2,'LineStyle','none');
-            plot(SegDistT,W_interp(:,3), 'o-','Color',[1,1,1].*.4);
+            plot(mean(SegDist_rec,2),W_interp(:,3), 'o-','Color',[1,1,1].*.4);
             %%%%%%%%%%%%%
             plot(SegDistT,SegEigANG_lower,'k-','LineWidth',2,'DisplayName','ANG model, lower')
             plot(SegDistT,SegEigANG_upper,'-','LineWidth',2,'DisplayName','ANG model, upper','Color',[1,1,1].*.4)
@@ -277,12 +349,8 @@ for activate_set = activate_sets
             axis(currentaxis);
             xticks(SegPtDist); xticklabels(SegPtName); xlim([0,max(SegPtDist)]);
             for i = 1:size(SegPtDist,1); xline(SegPtDist(i)); end
-            legend
-            legend({'Expt. mode lower','','Expt. mode upper','ANG model lower','ANG model upper'},...
-                'Location','southeast');
         
-        saveFigures([Plot_dir, save_name, '_weight',num2str(Weight), '_full'])
-        
+        saveFigures([Plot_dir, save_name, '_weight',num2str(Weight),'_full'])
         
         % Save all variables
         varNames = {'K','Wp','Wm','Lp','Lm','Lplist','Lmlist','Lptlist','Lmtlist','Wpperr','Wmmerr','Wpmerr','dwp_mat','dwm_mat',...

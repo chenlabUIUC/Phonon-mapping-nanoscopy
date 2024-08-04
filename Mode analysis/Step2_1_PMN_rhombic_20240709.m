@@ -1,17 +1,29 @@
 %% PMN on rhombic lattice
+% PURPOSE:  Main code for mode analysis, plotting, and fitting of nearest
+%           neighboring (NN) and angular (ANG) spring constants for rhombic
+%           or square lattice.
+%
+% INPUT:    Drift corrected position matrix for rhombic or square lattice,
+%           with shape of [N,2,t], N as number of nanoparticles, and t as
+%           number of frames in 'Input_path'
+%
+% OUTPUT:   Figures and output data matrix in 'Plot_dir'
+%           
+% HISTORY:  Written by Chang Qian
+% Last modified by Chang Qian on 07/09/2024
 
 clear; close all; clc;
-addpath('functions/');
+addpath('functions/')
 
 %%
 Input_path = 'Data drift rotation corrected/';
 Plot_dir = 'Plots/';
 
-activate_sets = [1,2,3];
+activate_sets = [1:3];
 % Input matrix name, tracking error (nm)
-Input_params{1} = {'Cube_22mM.mat', 0.5};
-Input_params{2} = {'Cube_27mM.mat', 0.5};
-Input_params{3} = {'Cube_110mM.mat', 0.5};
+Input_params{1} = {'Cube_22mM.mat', 0.5};   % Estimated runtime 2-5 min
+Input_params{2} = {'Cube_27mM.mat', 0.5};   % Estimated runtime 2-5 min
+Input_params{3} = {'Cube_110mM.mat', 0.5};  % Estimated runtime <1 min
 
 % Plotting parameters:
 %   K space repetition
@@ -41,6 +53,8 @@ for activate_set = activate_sets
     plot_pointSize = Plotting_params{activate_set}{4};
 
     SegN = floor((n1+n2)/2);
+    SegNT = 50;
+    N_T2D = 200; % Require 12 GB RAM
     [n1, n2] = deal(n2, n1);
     Q21 = pos;
 
@@ -231,16 +245,22 @@ for activate_set = activate_sets
         [Lpt,Lmt] = LatticePolAng(x1,angle,0.5*(A1mag+A2mag));
         
         % Modes, 2 bands.
-        Lp = sqrt(lp(K(:,1),K(:,2))); % lower
-        Lm = sqrt(lm(K(:,1),K(:,2))); % upper
+        [KTx,KTy] = meshgrid(linspace(-1,1,N_T2D).*plot_klim, ...
+                             linspace(-1,1,N_T2D).*plot_klim);
+        KT = cat(2, reshape(KTx,[],1), reshape(KTy,[],1));
+        Lp = sqrt(lp(KT(:,1),KT(:,2))); % lower
+        Lm = sqrt(lm(KT(:,1),KT(:,2))); % upper
         Lp(Echeck==1) = 0.0;
         Lm(Echeck==1) = 0.0;
         
         % Polarization, 2 bands
-        Lptlist=diag(Lmt(K(:,1),K(:,2)));
-        Lmtlist=diag(Lpt(K(:,1),K(:,2)));
+        Lptlist=diag(Lmt(KT(:,1),KT(:,2)));
+        Lmtlist=diag(Lpt(KT(:,1),KT(:,2)));
         Lptlist(Echeck==1)=0.0;
         Lmtlist(Echeck==1)=1.0;
+        inBoxT = inpolygon(KT(:,1), KT(:,2), Box_rhomb(:,1), Box_rhomb(:,2));
+        Lptlist(~inBoxT) = 0.5;
+        Lmtlist(~inBoxT) = 0.5;
         
         %% 1D path interpolation and comparison
         unpackStruct(Path_rhomb);
@@ -258,8 +278,9 @@ for activate_set = activate_sets
         end
         
         % ANG model
-        SegDistT = mean(SegDist_rec,2);
-        SegKT = SegK_rec(:,:,1);
+        PathT_rhomb = pathRhomb(b1, b2, SegNT);
+        SegDistT = mean(PathT_rhomb.SegDist_rec,2);
+        SegKT = PathT_rhomb.SegK_rec(:,:,1);
         
         SegEigANG_lower = zeros(size(SegDistT));
         SegEigANG_upper = zeros(size(SegDistT));
@@ -276,28 +297,65 @@ for activate_set = activate_sets
         nexttile(1)
             standardModePlot(K, Wp, PLM, plot_klim, plot_clim, plot_pointSize, 'Experiment frequency, lower')
             plot(Box_rhomb(:,1),Box_rhomb(:,2),'k-')
+            plot3(Box_rhomb(:,1),Box_rhomb(:,2),ones(size(Box_rhomb(:,1))).*plot_clim, 'k-', 'LineWidth',1)
         nexttile(2)
             standardModePlot(K, Wm, PLM, plot_klim, plot_clim, plot_pointSize, 'Experiment frequency, upper')
             plot(Box_rhomb(:,1),Box_rhomb(:,2),'k-')
+            plot3(Box_rhomb(:,1),Box_rhomb(:,2),ones(size(Box_rhomb(:,1))).*plot_clim, 'k-', 'LineWidth',1)
         nexttile(3)
-            standardModePlot(K, Lp, PLM, plot_klim, plot_clim, plot_pointSize, 'Model frequency, lower')
-            plot(Box_rhomb(:,1),Box_rhomb(:,2),'k-')
+            % standardModePlot(KT, Lp, PLM, plot_klim, plot_clim, plot_pointSize/10, 'Model frequency, lower')
+            imagesc(linspace(-1,1,N_T2D).*plot_klim, linspace(-1,1,N_T2D).*plot_klim, reshape(Lp,N_T2D,N_T2D));
+            colormap(gca, PLM);
+            title('Model frequency, lower')
+            hold on;
+            daspect([1,1,0.1]);
+            axis([-1,1,-1,1].*plot_klim)
+            set(gca,'YDir','normal')
+            plot3(Box_rhomb(:,1),Box_rhomb(:,2),ones(size(Box_rhomb(:,1))).*plot_clim, 'k-', 'LineWidth',1)
         nexttile(4)
-            standardModePlot(K, Lm, PLM, plot_klim, plot_clim, plot_pointSize, 'Model frequency, upper')
+            % standardModePlot(KT, Lm, PLM, plot_klim, plot_clim, plot_pointSize/10, 'Model frequency, upper')
+            imagesc(linspace(-1,1,N_T2D).*plot_klim, linspace(-1,1,N_T2D).*plot_klim, reshape(Lm,N_T2D,N_T2D));
+            colormap(gca, PLM);
+            title('Model frequency, upper')
+            hold on;
+            daspect([1,1,0.1]);
+            axis([-1,1,-1,1].*plot_klim)
+            set(gca,'YDir','normal')
             plot(Box_rhomb(:,1),Box_rhomb(:,2),'k-')
+            plot3(Box_rhomb(:,1),Box_rhomb(:,2),ones(size(Box_rhomb(:,1))).*plot_clim, 'k-', 'LineWidth',1)
             colorbar;
         nexttile(5)
             standardModePlot(K(inBox,:), Lplist(inBox), BWR, plot_klim, 1, plot_pointSize, 'Experiment polarization, lower')
             plot(Box_rhomb(:,1),Box_rhomb(:,2),'k-')
+            plot3(Box_rhomb(:,1),Box_rhomb(:,2),ones(size(Box_rhomb(:,1))).*plot_clim, 'k-', 'LineWidth',1)
         nexttile(6)
             standardModePlot(K(inBox,:), Lmlist(inBox), BWR, plot_klim, 1, plot_pointSize, 'Experiment polarization, upper')
             plot(Box_rhomb(:,1),Box_rhomb(:,2),'k-')
+            plot3(Box_rhomb(:,1),Box_rhomb(:,2),ones(size(Box_rhomb(:,1))).*plot_clim, 'k-', 'LineWidth',1)
         nexttile(7)
-            standardModePlot(K(inBox,:), Lptlist(inBox), BWR, plot_klim, 1, plot_pointSize, 'Model polarization, lower')
+            % standardModePlot(KT(inBoxT,:), Lptlist(inBoxT), BWR, plot_klim, 1, plot_pointSize/10, 'Model polarization, lower')
+            imagesc(linspace(-1,1,N_T2D).*plot_klim, linspace(-1,1,N_T2D).*plot_klim, reshape(Lptlist,N_T2D,N_T2D));
+            colormap(gca, BWR);
+            caxis([0,1]);
+            title('Model polarization, lower')
+            hold on;
+            daspect([1,1,0.1]);
+            axis([-1,1,-1,1].*plot_klim)
+            set(gca,'YDir','normal')
             plot(Box_rhomb(:,1),Box_rhomb(:,2),'k-')
+            plot3(Box_rhomb(:,1),Box_rhomb(:,2),ones(size(Box_rhomb(:,1))).*plot_clim, 'k-', 'LineWidth',1)
         nexttile(8)
-            standardModePlot(K(inBox,:), Lmtlist(inBox), BWR, plot_klim, 1, plot_pointSize, 'Model polarization, upper')
+            % standardModePlot(KT(inBoxT,:), Lmtlist(inBoxT), BWR, plot_klim, 1, plot_pointSize/10, 'Model polarization, upper')
+            imagesc(linspace(-1,1,N_T2D).*plot_klim, linspace(-1,1,N_T2D).*plot_klim, reshape(Lmtlist,N_T2D,N_T2D));
+            colormap(gca, BWR);
+            caxis([0,1]);
+            title('Model polarization, upper')
+            hold on;
+            daspect([1,1,0.1]);
+            axis([-1,1,-1,1].*plot_klim)
+            set(gca,'YDir','normal')
             plot(Box_rhomb(:,1),Box_rhomb(:,2),'k-')
+            plot3(Box_rhomb(:,1),Box_rhomb(:,2),ones(size(Box_rhomb(:,1))).*plot_clim, 'k-', 'LineWidth',1)
             colorbar;
         nexttile(9)
             cla;
@@ -322,13 +380,13 @@ for activate_set = activate_sets
 
             hold on; box on;
             %  Frequency with errorbar
-            xx = [SegDistT; flip(SegDistT)];
+            xx = [mean(SegDist_rec,2); flip(mean(SegDist_rec,2))];
             
-            errorbar(SegDistT,W_interp(:,1),W_interp(:,2),'vertical','ko')
+            errorbar(mean(SegDist_rec,2),W_interp(:,1),W_interp(:,2),'vertical','ko')
             
             yy = [W_interp(:,3)+W_interp(:,4) ; flip(W_interp(:,3)-W_interp(:,4)) ];
             fill(xx,yy,[1,1,1].*.6,'FaceAlpha',0.2,'LineStyle','none');
-            plot(SegDistT,W_interp(:,3), 'o-','Color',[1,1,1].*.4);
+            plot(mean(SegDist_rec,2),W_interp(:,3), 'o-','Color',[1,1,1].*.4);
             %%%%%%%%%%%%%
             plot(SegDistT,SegEigANG_lower,'k-','LineWidth',2,'DisplayName','ANG model, lower')
             plot(SegDistT,SegEigANG_upper,'-','LineWidth',2,'DisplayName','ANG model, upper','Color',[1,1,1].*.4)
@@ -337,40 +395,8 @@ for activate_set = activate_sets
             axis(currentaxis);
             xticks(SegPtDist); xticklabels(SegPtName); xlim([0,max(SegPtDist)]);
             for i = 1:size(SegPtDist,1); xline(SegPtDist(i)); end
-            legend
-            legend({'Expt. mode lower','','Expt. mode upper','ANG model lower','ANG model upper'},...
-                'Location','southeast');
         
         saveFigures([Plot_dir, save_name, '_weight',num2str(Weight),'_full'])
-        
-        
-        
-        
-        % % New mode plot
-        % figure(); hold on; box on;
-        % set(gcf,'Position',[324 612 654 266])
-        % %%%%%%%%%%%%%
-        % %  Frequency with errorbar
-        % xx = [SegDistT; flip(SegDistT)];
-        % 
-        % errorbar(SegDistT,W_interp(:,1),W_interp(:,2),'vertical','ko')
-        % 
-        % yy = [W_interp(:,3)+W_interp(:,4) ; flip(W_interp(:,3)-W_interp(:,4)) ];
-        % fill(xx,yy,[1,1,1].*.6,'FaceAlpha',0.2,'LineStyle','none');
-        % plot(SegDistT,W_interp(:,3), 'o-','Color',[1,1,1].*.4);
-        % %%%%%%%%%%%%%
-        % plot(SegDistT,SegEigANG_lower,'k-','LineWidth',2,'DisplayName','ANG model, lower')
-        % plot(SegDistT,SegEigANG_upper,'-','LineWidth',2,'DisplayName','ANG model, upper','Color',[1,1,1].*.4)
-        % ylabel('Frequency'); %ylim([-0.5e-3,4]); %axis auto
-        % currentaxis = axis();currentaxis(3)=0;
-        % axis(currentaxis);
-        % xticks(SegPtDist); xticklabels(SegPtName); xlim([0,max(SegPtDist)]);
-        % for i = 1:size(SegPtDist,1); xline(SegPtDist(i)); end
-        % legend
-        % legend({'Expt. mode lower','','Expt. mode upper','ANG model lower','ANG model upper'},...
-        %     'Location','southeast');
-        % saveFigures([Plot_dir, save_name, '_weight',num2str(Weight),'_NewMode'])
-        
         
         
         % Save all variables
@@ -383,9 +409,6 @@ for activate_set = activate_sets
     
     end
 end
-
-
-
 
 
 %% Functions

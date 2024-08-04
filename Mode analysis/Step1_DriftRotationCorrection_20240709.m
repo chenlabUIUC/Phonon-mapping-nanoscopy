@@ -1,19 +1,26 @@
 %% Drift and Rotation correction
-% Load data
-% Manual select 1st and 2nd lattice vectors, and input number of NP along the vectors.
-% Rough drift and rotation correction to the 1st frame
-% Fine drift and rotation correction
-% Rotation so that lattice vector 2 is along x-axis.
+% PURPOSE:  Drift and rotation correction for the raw trajectories of
+%           nanoparticles.
+%
+% INPUT:    Raw trajectories of nanoparticles in a superlattice, with shape
+%           of [N,2,t], N as number of nanoparticles, and t as number of
+%           frames in 'Input_path'
+%
+% OUTPUT:   Drift and rotation corrected trajectories in 'Output_path', and
+%           figure in 'Plot_path'
+%           
+% HISTORY:  Written by Chang Qian
+% Last modified by Chang Qian on 07/09/2024
 
 clear; close all; clc;
-addpath('functions/');
+addpath('functions/')
 
 %%
 Input_path = 'Data raw/';
 Output_path = 'Data drift rotation corrected/';
 Plot_path = 'Plots/';
 
-activate_sets = [4];
+activate_sets = [1:5];
 % Input format
 %   Input matrix name
 %   3 indices to determine 2 lattice vectors:
@@ -21,11 +28,11 @@ activate_sets = [4];
 %       p1-p3 as vector 2
 %   2 numbers indicating number of NP along each vector
 % If the input only include 
-Input_params{1} = {'Cube_22mM_raw.mat',     1,13,79,        13,7};
-Input_params{2} = {'Cube_27mM_raw.mat',     1,8,57,         8,8};
-Input_params{3} = {'Cube_110mM_raw.mat',    7,1,56,         7,8};
-Input_params{4} = {'Rod_raw.mat',           32,135,201,     10,10};
-Input_params{5} = {'Prism_raw.mat',         1,46,41,        6,6};
+Input_params{1} = {'Cube_22mM_raw.mat',     1,13,79,        13,7};  % Expected runtime <1 min
+Input_params{2} = {'Cube_27mM_raw.mat',     1,8,57,         8,8};   % Expected runtime <1 min
+Input_params{3} = {'Cube_110mM_raw.mat',    7,1,56,         7,8};   % Expected runtime <1 min
+Input_params{4} = {'Rod_raw.mat',           32,135,201,     10,10}; % Expected runtime 0.5 ~ 1.5 hr
+Input_params{5} = {'Prism_raw.mat',         1,46,41,        6,6};   % Expected runtime <1 min
 
 if ~exist(Output_path, 'dir'); mkdir(Output_path); end
 if ~exist(Plot_path, 'dir'); mkdir(Plot_path); end
@@ -131,7 +138,6 @@ for activate_set = activate_sets
 end
 
 %% Functions
-
 
 
 
