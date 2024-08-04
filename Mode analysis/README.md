@@ -13,5 +13,7 @@ Download the "functions", "Data drift rotation corrected", and "Data raw" folder
 Notes: For the Step1 and Step2 codes, inputs are set as the sample data provided in "Data raw" and "Data drift rotation corrected" folders. Comments are given in the codes on how to input your own experimental data following the sample input data formats. The inputs of tracking errors for Step2_1_PMN_rhombic_20240709.m and Step2_2_PMN_hexagonal_20240709.m, can be estimated using the workflow detailed in the Supplementary Information of the manuscript. 
 
 ## Runtime estimation:
-Operating condition: Windows, 64-bit; 64 GB RAM; CPU Intel i9-13900HX, Matlab R2023b.
+Operating condition 1: Windows, 64-bit, 64 GB RAM, CPU Intel(R) Core(TM) i9-13900HX, Matlab R2023b.
 - For the largest dataset, 'Rod.mat', the drift and rotation correction takes ~0.5 hr and mode analysis takes ~1.5 hr.
+Operating condition 2: Windows, 64-bit, 16 GB RAM, CPU Intel(R) Core(TM) i5-10500H, Matlab R2021a.
+- For the largest dataset, 'Rod.mat', the drift and rotation correction takes ~1.5 hr and mode analysis takes ~4 hr.
