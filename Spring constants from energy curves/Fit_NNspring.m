@@ -21,8 +21,8 @@
 clear; close all; clc;
 
 I0 = [22,27,110]; % mM
-load('Energy_Minima.mat')
-load('NNSpring.mat')
+load('Data/Cube_Energy_Minima.mat')
+load('Data/Cube_NNSpring.mat')
 
 figure(1); hold on;
 fitResults_NN = [];
