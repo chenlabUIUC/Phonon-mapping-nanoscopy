@@ -54,7 +54,7 @@ for activate_set = activate_sets
 
     SegN = floor((n1+n2)/2);
     SegNT = 50;
-    N_T2D = 200; % Require ~12 GB RAM
+    N_T2D = 200; % Require 12 GB RAM
     [n1, n2] = deal(n2, n1);
     Q21 = pos;
 
@@ -390,7 +390,7 @@ for activate_set = activate_sets
             %%%%%%%%%%%%%
             plot(SegDistT,SegEigANG_lower,'k-','LineWidth',2,'DisplayName','ANG model, lower')
             plot(SegDistT,SegEigANG_upper,'-','LineWidth',2,'DisplayName','ANG model, upper','Color',[1,1,1].*.4)
-            ylabel('Frequency'); %ylim([-0.5e-3,4]); %axis auto
+            ylabel('Frequency (nm^{-1})'); %ylim([-0.5e-3,4]); %axis aut
             currentaxis = axis();currentaxis(3)=0;
             axis(currentaxis);
             xticks(SegPtDist); xticklabels(SegPtName); xlim([0,max(SegPtDist)]);
