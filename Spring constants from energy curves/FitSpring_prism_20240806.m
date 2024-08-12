@@ -41,7 +41,7 @@ xtemp = x_curve(select);
 ytemp = y_curve(select);
 w = exp(-ytemp);
 
-[fitresult, gof] = createFit(xtemp, ytemp, w, rmin, Em);
+[fitresult, gof] = createFit(xtemp', ytemp, w, rmin, Em);
 kfit = fitresult.a;
 
 figure()
