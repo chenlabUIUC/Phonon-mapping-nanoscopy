@@ -10,7 +10,7 @@ This code package is developed to perform the phonon mode analysis for nanoparti
 
 Date: 08/2024.
 
-The mode analysis and spring constant parts are developed and tested using Matlab 2021a.  
+The mode analysis and spring constant parts are developed and tested using Matlab 2021a with access to Matlab toolboxes, such as  Symbolic Math Toolbox and Curve Fitting Toolbox. 
 
 The BD simulation part is developed and tested using LAMMPS (29sep2021) and Matlab 2021a.
 
